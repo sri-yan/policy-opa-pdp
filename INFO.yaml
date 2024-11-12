@@ -31,11 +31,6 @@ repositories:
   - 'policy/opa-pdp'
 committers:
   - <<: *onap_releng_ptl
-  - name: 'Ramesh Murugan Iyer'
-    email: 'ramesh.murugan.iyer@est.tech'
-    company: 'Ericsson'
-    id: 'rameshiyer27'
-    timezone: 'Europe/Ireland'
   - name: 'Jorge Hernandez'
     email: 'jorge.hernandez-herrero@att.com'
     company: 'ATT'
