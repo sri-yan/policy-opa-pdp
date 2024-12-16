@@ -38,6 +38,7 @@ fi
 function  _build_docker_and_push_image {
     local tag_name=${IMAGE_NAME}:${VERSION}
 
+    docker login -u docker -p docker nexus3.onap.org:10003
     docker build -f  Dockerfile  -t policy-opa-pdp:${VERSION} .
     echo "Start push {$tag_name}"
     docker tag policy-opa-pdp:${VERSION} ${IMAGE_NAME}:latest
