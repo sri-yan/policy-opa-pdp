@@ -1,0 +1,62 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2024 The Linux Foundation
+
+# This workflow uses actions that are not certified by GitHub. They are provided
+# by a third-party and are governed by separate terms of service, privacy
+# policy, and support documentation.
+
+name: 🔐 Security Scans
+on:
+  workflow_dispatch:
+  # For Branch-Protection check. Only the default branch is supported. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  # To guarantee Maintained check is occasionally updated. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  schedule:
+    - cron: "*/10 * * * *"
+  push:
+    branches: ["main", "master"]
+    paths:
+      - "**"
+      - "!.github/**"
+
+# Declare default permissions as none.
+permissions: {}
+
+jobs:
+  generate-coverage:
+    name: "Generate Coverage"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Generate Coverage Report
+        run: |
+          go test ./... -coverprofile=coverage.out
+  sonatype-lifecycle:
+    name: "Sonatype Lifecycle"
+    # yamllint disable-line rule:line-length
+    uses: lfit/releng-reusable-workflows/.github/workflows/reuse-sonatype-lifecycle.yaml@83e3ea0dcbfb1e8c707b0284ae7e7c376b0e27d4 # v0.2.7
+    secrets:
+      NEXUS_IQ_PASSWORD: ${{ secrets.NEXUS_IQ_PASSWORD }}
+
+  # Scan results are found at: https://sonarcloud.io/login
+  sonarqube-cloud:
+    name: "SonarQube Cloud"
+    # yamllint disable-line rule:line-length
+    uses: lfit/releng-reusable-workflows/.github/workflows/reuse-sonarqube-cloud.yaml@83e3ea0dcbfb1e8c707b0284ae7e7c376b0e27d4 # v0.2.7
+    permissions:
+      # Needed to upload the results to code-scanning dashboard.
+      security-events: write
+      # Needed to publish results and get a badge (see publish_results below).
+      id-token: write
+      # Uncomment the permissions below if installing in a private repository.
+      # contents: read
+      # actions: read
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
