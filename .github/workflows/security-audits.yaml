@@ -48,6 +48,7 @@ jobs:
   # Scan results are found at: https://sonarcloud.io/login
   sonarqube-cloud:
     name: "SonarQube Cloud"
+    needs: generate-coverage
     # yamllint disable-line rule:line-length
     uses: lfit/releng-reusable-workflows/.github/workflows/reuse-sonarqube-cloud.yaml@83e3ea0dcbfb1e8c707b0284ae7e7c376b0e27d4 # v0.2.7
     permissions:
